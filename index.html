@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 超级游戏合集 - 四合一游戏门户</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        :root {
+            --primary-color: #4cc9f0;
+            --secondary-color: #7209b7;
+            --success-color: #06d6a0;
+            --warning-color: #ffd166;
+            --danger-color: #ef476f;
+            --dark-bg: #0f172a;
+            --light-bg: #f8f9fa;
+            --text-dark: #212529;
+            --text-light: #f8f9fa;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0d1b2a);
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(76,201,240,0.1) 0%, rgba(114,9,183,0.05) 100%);
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部样式 */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--success-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(76, 201, 240, 0.5);
+            animation: glow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px rgba(76, 201, 240, 0.5); }
+            100% { text-shadow: 0 0 30px rgba(76, 201, 240, 0.8), 0 0 40px rgba(114, 9, 183, 0.6); }
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 800px;
+            margin: 0 auto 25px;
+            line-height: 1.6;
+        }
+
+        /* 游戏网格 */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .game-card {
+            background: rgba(26, 32, 44, 0.9);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            border: 2px solid transparent;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            backdrop-filter: blur(10px);
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--primary-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(76, 201, 240, 0.3);
+        }
+
+        .game-card-header {
+            padding: 25px 25px 15px;
+            text-align: center;
+            border-bottom: 1px solid rgba(76, 201, 240, 0.2);
+        }
+
+        .game-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .game-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .game-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+        }
+
+        .game-card-body {
+            padding: 20px 25px;
+        }
+
+        .game-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .game-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .game-features li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.7);
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .game-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .game-card-footer {
+            padding: 20px 25px;
+            background: rgba(15, 23, 42, 0.7);
+            text-align: center;
+        }
+
+        .play-btn {
+            display: inline-block;
+            background: linear-gradient(45deg, var(--primary-color), #4361ee);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .play-btn:hover::before {
+            left: 100%;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 游戏卡片特定颜色 */
+        .game-card:nth-child(1) { border-top: 5px solid #ff1a75; }
+        .game-card:nth-child(2) { border-top: 5px solid #4cc9f0; }
+        .game-card:nth-child(3) { border-top: 5px solid #06d6a0; }
+        .game-card:nth-child(4) { border-top: 5px solid #ffd166; }
+
+        .game-card:nth-child(1) .play-btn { background: linear-gradient(45deg, #ff1a75, #ff4d94); }
+        .game-card:nth-child(2) .play-btn { background: linear-gradient(45deg, #4cc9f0, #4361ee); }
+        .game-card:nth-child(3) .play-btn { background: linear-gradient(45deg, #06d6a0, #2e7d32); }
+        .game-card:nth-child(4) .play-btn { background: linear-gradient(45deg, #ffd166, #f9844a); }
+
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+            border-top: 1px solid rgba(76, 201, 240, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .footer p {
+            margin: 10px 0;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5em;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .game-card {
+                margin: 0 10px;
+            }
+        }
+
+        /* 游戏模态框 */
+        .game-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: rgba(26, 32, 44, 0.95);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 1000px;
+            max-height: 90vh;
+            overflow: hidden;
+            border: 3px solid var(--primary-color);
+            box-shadow: 0 0 50px rgba(76, 201, 240, 0.5);
+            position: relative;
+        }
+
+        .modal-header {
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.9);
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-body {
+            padding: 0;
+            height: calc(90vh - 70px);
+        }
+
+        .game-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* 返回按钮 */
+        .back-to-portal {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--danger-color);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        .back-to-portal:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 超级游戏合集</h1>
+            <p>四款精心制作的HTML5游戏，集合在一个门户中。点击任意游戏开始游玩！</p>
+            <p style="color: var(--warning-color); font-size: 1em;">所有游戏均使用纯HTML5/CSS3/JavaScript开发，无需安装，直接游玩！</p>
+        </div>
+
+        <div class="games-grid">
+            <!-- 街头赛车 PRO -->
+            <div class="game-card">
+                <div class="game-card-header">
+                    <span class="game-icon">🏎️</span>
+                    <h2 class="game-title">街头赛车 PRO</h2>
+                    <p class="game-subtitle">桌面版 - 高速竞速游戏</p>
+                </div>
+                <div class="game-card-body">
+                    <p class="game-description">
+                        体验极速街头赛车！躲避车辆，收集金币，使用氮气加速、护盾和漂移技能，创造最高分记录。
+                    </p>
+                    <ul class="game-features">
+                        <li>键盘控制：方向键移动，空格加速</li>
+                        <li>三种特殊技能：氮气、护盾、漂移</li>
+                        <li>四种障碍车辆类型</li>
+                        <li>金币和道具收集系统</li>
+                        <li>动态道路和粒子特效</li>
+                    </ul>
+                </div>
+                <div class="game-card-footer">
+                    <button class="play-btn" data-game="STREET RACING PRO.html">开始游戏</button>
+                </div>
+            </div>
+
+            <!-- 街头赛车 PRO 2.0 -->
+            <div class="game-card">
+                <div class="game-card-header">
+                    <span class="game-icon">📱</span>
+                    <h2 class="game-title">街头赛车 PRO 2.0</h2>
+                    <p class="game-subtitle">移动优化版 - 触控体验</p>
+                </div>
+                <div class="game-card-body">
+                    <p class="game-description">
+                        专为移动设备优化的赛车游戏！大尺寸触控按钮，响应式设计，完美适配手机和平板。
+                    </p>
+                    <ul class="game-features">
+                        <li>触屏控制：左右按钮转向</li>
+                        <li>响应式设计，适配所有屏幕</li>
+                        <li>大尺寸触控按钮</li>
+                        <li>移动端优化UI和特效</li>
+                        <li>支持设备倾斜控制</li>
+                    </ul>
+                </div>
+                <div class="game-card-footer">
+                    <button class="play-btn" data-game="STREET RACING PRO2.0.html">开始游戏</button>
+                </div>
+            </div>
+
+            <!-- Doodle Jump -->
+            <div class="game-card">
+                <div class="game-card-header">
+                    <span class="game-icon">👾</span>
+                    <h2 class="game-title">Doodle Jump</h2>
+                    <p class="game-subtitle">完美修复版 - 平台跳跃</p>
+                </div>
+                <div class="game-card-body">
+                    <p class="game-description">
+                        经典Doodle Jump游戏！控制小怪物不断向上跳跃，避开障碍，收集星星，挑战最高高度。
+                    </p>
+                    <ul class="game-features">
+                        <li>智能相机跟随系统</li>
+                        <li>三种平台类型：普通、移动、易碎</li>
+                        <li>星星收集和怪物躲避</li>
+                        <li>支持键盘和触屏控制</li>
+                        <li>移动端倾斜控制支持</li>
+                    </ul>
+                </div>
+                <div class="game-card-footer">
+                    <button class="play-btn" data-game="doodle jump.html">开始游戏</button>
+                </div>
+            </div>
+
+            <!-- 超级俄罗斯方块 -->
+            <div class="game-card">
+                <div class="game-card-header">
+                    <span class="game-icon">🧩</span>
+                    <h2 class="game-title">超级俄罗斯方块</h2>
+                    <p class="game-subtitle">单人专业版 - 经典益智</p>
+                </div>
+                <div class="game-card-body">
+                    <p class="game-description">
+                        终极俄罗斯方块体验！四种游戏模式，多种主题，成就系统，排行榜，带来前所未有的挑战。
+                    </p>
+                    <ul class="game-features">
+                        <li>四种游戏模式：经典、障碍、计时、生存</li>
+                        <li>多种配色主题选择</li>
+                        <li>成就系统和排行榜</li>
+                        <li>粒子特效和3D方块效果</li>
+                        <li>完整的游戏设置选项</li>
+                    </ul>
+                </div>
+                <div class="game-card-footer">
+                    <button class="play-btn" data-game="progame2.html">开始游戏</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>🎮 超级游戏合集 - 四合一HTML5游戏门户</p>
+            <p>所有游戏均为纯前端实现，无需后端支持</p>
+            <p>© 2023 游戏开发者 | 使用HTML5, CSS3, JavaScript制作</p>
+        </div>
+    </div>
+
+    <!-- 游戏模态框 -->
+    <div class="game-modal" id="gameModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalGameTitle">游戏加载中...</h2>
+                <button class="close-modal" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe class="game-frame" id="gameFrame" frameborder="0"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- 返回门户按钮 -->
+    <a href="#" class="back-to-portal" id="backToPortal">🏠</a>
+
+    <script>
+        // 游戏数据
+        const games = {
+            'STREET RACING PRO.html': {
+                title: '🏎️ 街头赛车 PRO',
+                description: '桌面版高速竞速游戏'
+            },
+            'STREET RACING PRO2.0.html': {
+                title: '📱 街头赛车 PRO 2.0',
+                description: '移动优化版赛车游戏'
+            },
+            'doodle jump.html': {
+                title: '👾 Doodle Jump',
+                description: '完美修复版平台跳跃游戏'
+            },
+            'progame2.html': {
+                title: '🧩 超级俄罗斯方块',
+                description: '单人专业版俄罗斯方块'
+            }
+        };
+
+        // DOM元素
+        const gameModal = document.getElementById('gameModal');
+        const gameFrame = document.getElementById('gameFrame');
+        const modalGameTitle = document.getElementById('modalGameTitle');
+        const closeModalBtn = document.getElementById('closeModal');
+        const backToPortalBtn = document.getElementById('backToPortal');
+        const playButtons = document.querySelectorAll('.play-btn');
+
+        // 打开游戏
+        function openGame(gameFile) {
+            const game = games[gameFile];
+            if (!game) return;
+            
+            // 更新模态框标题
+            modalGameTitle.textContent = game.title;
+            
+            // 加载游戏
+            gameFrame.src = gameFile;
+            
+            // 显示模态框
+            gameModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // 显示返回按钮
+            backToPortalBtn.style.display = 'flex';
+            
+            // 添加键盘快捷键支持
+            document.addEventListener('keydown', handleModalKeydown);
+        }
+
+        // 关闭游戏
+        function closeGame() {
+            gameModal.style.display = 'none';
+            gameFrame.src = '';
+            document.body.style.overflow = 'auto';
+            backToPortalBtn.style.display = 'none';
+            
+            // 移除键盘事件监听
+            document.removeEventListener('keydown', handleModalKeydown);
+        }
+
+        // 处理模态框内键盘事件
+        function handleModalKeydown(e) {
+            // ESC键关闭模态框
+            if (e.key === 'Escape') {
+                closeGame();
+            }
+            
+            // 防止事件冒泡到游戏iframe
+            e.stopPropagation();
+        }
+
+        // 绑定播放按钮事件
+        playButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const gameFile = this.getAttribute('data-game');
+                openGame(gameFile);
+            });
+        });
+
+        // 绑定关闭按钮事件
+        closeModalBtn.addEventListener('click', closeGame);
+
+        // 绑定返回门户按钮事件
+        backToPortalBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeGame();
+        });
+
+        // 点击模态框背景关闭
+        gameModal.addEventListener('click', function(e) {
+            if (e.target === gameModal) {
+                closeGame();
+            }
+        });
+
+        // 添加游戏卡片悬停效果增强
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.zIndex = '10';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.zIndex = '1';
+            });
+        });
+
+        // 页面加载完成后的初始化
+        window.addEventListener('load', function() {
+            console.log('🎮 超级游戏合集门户已加载完成！');
+            console.log('包含游戏:');
+            Object.keys(games).forEach(game => {
+                console.log(`- ${games[game].title}`);
+            });
+        });
+
+        // 添加游戏统计
+        let gamesPlayed = JSON.parse(localStorage.getItem('gamesPlayed')) || {};
+        
+        // 游戏开始播放时记录
+        gameFrame.addEventListener('load', function() {
+            const currentGame = gameFrame.src.split('/').pop();
+            if (currentGame && games[currentGame]) {
+                gamesPlayed[currentGame] = (gamesPlayed[currentGame] || 0) + 1;
+                localStorage.setItem('gamesPlayed', JSON.stringify(gamesPlayed));
+                console.log(`游戏 ${games[currentGame].title} 已播放 ${gamesPlayed[currentGame]} 次`);
+            }
+        });
+    </script>
+</body>
+</html>
