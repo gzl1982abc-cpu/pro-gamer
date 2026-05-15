@@ -1,1 +1,1024 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>寶可夢交易板</title>
+    <!-- 引入圓潤可愛的字體 -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #f43f5e; /* 酷炫霓虹紅 */
+            --bg-color: #0f172a; /* 深夜藍背景 */
+            --text-dark: #f1f5f9; /* 淺灰白字體 */
+            --card-ft: #164e63; /* 提供(FT) 的深青色 */
+            --card-lf: #4a044e; /* 尋找(LF) 的深紫色 */
+            --shiny-gold: #fbbf24;
+            --section-bg: #1e293b; /* 區塊深色背景 */
+            --border-color: #334155; /* 邊框顏色 */
+            --input-bg: #020617; /* 輸入框極深背景 */
+        }
 
+        body {
+            font-family: 'Nunito', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(var(--border-color) 1px, transparent 1px); /* 暗色網點背景 */
+            background-size: 20px 20px;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding-bottom: 80px; /* 留空間給浮動元素 */
+        }
+
+        .header-wrapper {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px #000, 4px 4px 0px rgba(0,0,0,0.5);
+        }
+
+        .pokemon-sprites {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .sprite {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            animation: bounce 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));
+        }
+
+        .sprite:nth-child(2) { animation-delay: 0.2s; }
+        .sprite:nth-child(3) { animation-delay: 0.4s; }
+        .sprite:nth-child(4) { animation-delay: 0.6s; }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            justify-content: center;
+        }
+
+        .nav-tab {
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            font-weight: 900;
+            border-radius: 30px;
+            border: 2px solid var(--border-color);
+            background: var(--section-bg);
+            color: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            color: var(--text-dark);
+        }
+
+        .nav-tab.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+        }
+
+        .page-view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .page-view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-section, .filter-section {
+            background: var(--section-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #94a3b8;
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            background: var(--input-bg);
+            color: var(--text-dark);
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(244, 63, 94, 0.3);
+        }
+
+        /* 讓下拉選單在某些瀏覽器暗色模式下更好看 */
+        select option {
+            background: var(--input-bg);
+            color: var(--text-dark);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #94a3b8;
+        }
+
+        .checkbox-group input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        button.submit-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 900;
+            transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(244, 63, 94, 0.4);
+        }
+
+        button.submit-btn:hover {
+            background-color: #e11d48;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(244, 63, 94, 0.6);
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-controls > div {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .card-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--section-bg);
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            position: relative;
+            border-left: 8px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        /* 精靈球背景浮水印 - 改為暗色系 */
+        .card::after {
+            content: '';
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            width: 120px;
+            height: 120px;
+            background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="none" stroke="%23ffffff" stroke-width="5" opacity="0.05"/><path d="M5 50 h35 a10 10 0 0 0 20 0 h35" fill="none" stroke="%23ffffff" stroke-width="5" opacity="0.05"/><circle cx="50" cy="50" r="10" fill="none" stroke="%23ffffff" stroke-width="5" opacity="0.05"/></svg>');
+            background-repeat: no-repeat;
+            background-size: cover;
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .card.type-FT {
+            background-color: var(--card-ft);
+            border-left-color: #06b6d4; /* 霓虹青 */
+        }
+
+        .card.type-LF {
+            background-color: var(--card-lf);
+            border-left-color: #d946ef; /* 霓虹紫 */
+        }
+
+        .card.status-traded {
+            opacity: 0.5;
+            background-color: var(--input-bg);
+            border-left-color: #475569;
+        }
+        
+        .card.status-traded .card-title {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+            color: var(--text-dark);
+        }
+
+        .shiny-badge {
+            color: var(--shiny-gold);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border: 1px solid var(--shiny-gold);
+            font-weight: 900;
+            box-shadow: 0 0 8px rgba(245, 158, 11, 0.2);
+        }
+
+        .type-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .badge-FT { background-color: #06b6d4; }
+        .badge-LF { background-color: #d946ef; }
+
+        .card-body p {
+            margin: 8px 0;
+            line-height: 1.6;
+            font-size: 1.05rem;
+            color: #e2e8f0;
+        }
+
+        .card-meta {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 15px;
+            border-top: 2px dashed var(--border-color);
+            padding-top: 12px;
+            font-weight: 700;
+        }
+
+        .card-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .action-btn:hover { transform: translateY(-2px); opacity: 1; filter: brightness(1.1); }
+        .btn-interest { background-color: #10b981; color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3); }
+        .btn-status { background-color: #475569; color: white; box-shadow: 0 4px 10px rgba(71, 85, 105, 0.3); }
+        .btn-message { background-color: #3b82f6; color: white; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+        
+        .unread-badge { background: var(--primary); color: white; border-radius: 50%; padding: 2px 6px; font-size: 0.8rem; vertical-align: top; margin-left: 5px; font-weight: bold; box-shadow: 0 0 8px var(--primary);}
+        
+        #empty-msg {
+            text-align: center;
+            color: #94a3b8;
+            padding: 40px 20px;
+            display: none;
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: var(--section-bg);
+            border-radius: 16px;
+            border: 2px dashed var(--border-color);
+        }
+
+        /* 浮動伊布 */
+        .floating-eevee {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 80px;
+            z-index: 100;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* 登入介面樣式 */
+        #page-login {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding-top: 20px;
+        }
+
+        .login-card {
+            background: var(--section-bg);
+            padding: 40px 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* 彈出視窗樣式 */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--section-bg); padding: 25px; border-radius: 16px;
+            border: 1px solid var(--border-color); width: 90%; max-width: 400px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-wrapper">
+        <h1>🔴 寶可夢交易板</h1>
+        <div class="pokemon-sprites">
+            <!-- 引入動態 GIF (第5世代風格) 增加生動感 -->
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/1.gif" alt="妙蛙種子" class="sprite">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/4.gif" alt="小火龍" class="sprite">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/7.gif" alt="傑尼龜" class="sprite">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/25.gif" alt="皮卡丘" class="sprite">
+        </div>
+    </div>
+
+    <!-- 導覽頁籤 (加入 id 以便登入前隱藏) -->
+    <div class="nav-tabs" id="main-nav" style="display: none;">
+        <button class="nav-tab" onclick="switchPage('list')" id="tab-list">🏠 交易大廳</button>
+        <button class="nav-tab" onclick="switchPage('post')" id="tab-post">📝 發布貼文</button>
+        <button class="nav-tab" onclick="switchPage('match')" id="tab-match">✨ 智能匹配</button>
+        <button class="nav-tab" onclick="switchPage('inbox')" id="tab-inbox">📩 訊息匣 <span id="unreadBadge" class="unread-badge" style="display:none;">0</span></button>
+        <button class="nav-tab" onclick="logout()" style="background: transparent; border-color: var(--border-color); margin-left: auto;">🚪 登出</button>
+    </div>
+
+    <!-- 登入頁面 -->
+    <div id="page-login" class="page-view active">
+        <div class="login-card">
+            <h2 style="color: var(--primary); margin-top: 0; font-weight: 900; text-shadow: 0 0 10px rgba(244, 63, 94, 0.3);">🎮 訓練家登入</h2>
+            <p style="color: #94a3b8; margin-bottom: 25px; line-height: 1.5;">請先設定你的訓練家身分，方便與其他玩家交流，並啟用智能匹配功能！</p>
+            <form id="loginForm">
+                <div class="form-group" style="text-align: left;">
+                    <label for="trainerName">訓練家名稱</label>
+                    <input type="text" id="trainerName" required placeholder="例如：小智">
+                </div>
+                <div class="form-group" style="text-align: left;">
+                    <label for="defaultContact">預設聯絡方式</label>
+                    <input type="text" id="defaultContact" required placeholder="例如：Switch FC 1234...">
+                </div>
+                <button type="submit" class="submit-btn" style="margin-top: 10px;">進入交易板</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="page-post" class="page-view">
+        <div class="form-section">
+            <form id="tradeForm">
+                <div class="form-group">
+                    <label for="pokemonName">寶可夢名稱 (必填)</label>
+                    <input type="text" id="pokemonName" name="pokemonName" required placeholder="例如：噴火龍、多龍巴魯托">
+                </div>
+                
+                <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                    <div style="flex: 1;">
+                        <label for="tradeType">交易類型</label>
+                        <select id="tradeType" name="tradeType">
+                            <option value="FT">提供 (FT - For Trade)</option>
+                            <option value="LF">尋找 (LF - Looking For)</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1; display: flex; align-items: flex-end; padding-bottom: 12px;">
+                        <label class="checkbox-group">
+                            <input type="checkbox" id="isShiny" name="isShiny">
+                            ✨ 色違 (Shiny)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="contactInfo">聯絡方式 (必填)</label>
+                    <input type="text" id="contactInfo" name="contactInfo" required placeholder="例如：Switch FC 1234-5678-9012">
+                </div>
+
+                <div class="form-group">
+                    <label for="details">備註細節</label>
+                    <input type="text" id="details" name="details" placeholder="例如：究極球 / 隱藏特性 / 6V / 攜帶特性膏藥">
+                </div>
+
+                <button type="submit" class="submit-btn">🚀 發布交易貼文</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="page-list" class="page-view active">
+        <!-- 篩選器 -->
+        <div class="filter-section">
+            <div class="filter-controls">
+                <div>
+                    <label for="filterStatus">狀態篩選：</label>
+                    <select id="filterStatus">
+                        <option value="all">顯示全部</option>
+                        <option value="active" selected>只看進行中 (active)</option>
+                        <option value="traded">只看已交換 (traded)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="filterType">類型篩選：</label>
+                    <select id="filterType">
+                        <option value="all">顯示全部</option>
+                        <option value="FT">提供 (FT)</option>
+                        <option value="LF">尋找 (LF)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="checkbox-group" style="margin-top: 25px;">
+                        <input type="checkbox" id="filterShiny"> 只看色違 ✨
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- 列表展示區 -->
+        <div id="empty-msg">🔍 目前沒有符合條件的交易貼文，成為第一個發布的人吧！</div>
+        <div class="card-list" id="tradeList">
+            <!-- 卡片會由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+    <div id="page-match" class="page-view">
+        <div class="filter-section" style="text-align: center;">
+            <h2 style="margin: 0; color: var(--primary); text-shadow: 0 0 10px rgba(244, 63, 94, 0.3);">🎯 智能匹配系統</h2>
+            <p style="color: #94a3b8; margin-top: 10px;">系統會自動根據你發布過的貼文，為你尋找需要你的寶可夢，或是提供你所需寶可夢的玩家！</p>
+        </div>
+        <div id="matchList" class="card-list">
+            <!-- 匹配結果會由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+    <!-- 訊息匣頁面 -->
+    <div id="page-inbox" class="page-view">
+        <div class="filter-section" style="text-align: center;">
+            <h2 style="margin: 0; color: var(--primary); text-shadow: 0 0 10px rgba(244, 63, 94, 0.3);">📩 你的訊息匣</h2>
+            <p style="color: #94a3b8; margin-top: 10px;">這裡會顯示其他玩家發送給你的交易請求！</p>
+        </div>
+        <div id="inboxList" class="card-list">
+            <!-- 訊息會由 JavaScript 動態生成 -->
+        </div>
+    </div>
+
+</div>
+
+<!-- 頁面右下角的浮動伊布 -->
+<img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-v/black-white/animated/133.gif" alt="Eevee" class="floating-eevee" title="伊布陪伴你交易！">
+
+<!-- 訊息發送彈窗 -->
+<div id="messageModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h3 id="modalTitle" style="color: var(--primary); margin-top: 0; font-weight: 900;">發送訊息</h3>
+        <textarea id="messageInput" rows="5" style="width: 100%; padding: 12px; border-radius: 10px; background: var(--input-bg); color: var(--text-dark); border: 2px solid var(--border-color); font-family: inherit; font-size: 1rem; resize: vertical; margin-bottom: 15px; box-sizing: border-box;" placeholder="輸入你想說的話..."></textarea>
+        <div style="display: flex; gap: 10px;">
+            <button class="action-btn btn-message" onclick="submitMessage()" style="flex: 1;">🚀 發送</button>
+            <button class="action-btn btn-status" onclick="closeMessageModal()" style="flex: 1;">❌ 取消</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'pokemon_trades';
+    const MY_POSTS_KEY = 'my_pokemon_posts';
+    const MESSAGES_KEY = 'pokemon_messages'; // 新增：訊息儲存鍵值
+    let records = [];
+    let myPosts = [];
+    let messages = []; // 新增：訊息陣列
+    let currentUser = null; // 新增：紀錄當前登入使用者
+    let currentMessageTarget = ''; // 新增：目前正在發送訊息的對象
+    let currentMessagePokemon = null; // 新增：目前正在詢問的寶可夢
+
+    // 1. loadData(): 從 localStorage 讀取
+    function loadData() {
+        const storedData = localStorage.getItem(STORAGE_KEY);
+        const storedMyPosts = localStorage.getItem(MY_POSTS_KEY);
+        const storedUser = localStorage.getItem('pokemon_current_user');
+        const storedMessages = localStorage.getItem(MESSAGES_KEY);
+        
+        myPosts = storedMyPosts ? JSON.parse(storedMyPosts) : [];
+        currentUser = storedUser ? JSON.parse(storedUser) : null;
+        messages = storedMessages ? JSON.parse(storedMessages) : [];
+        
+        return storedData ? JSON.parse(storedData) : [];
+    }
+
+    // 2. createRecord(formData): 建立新物件
+    function createRecord(formData) {
+        return {
+            id: Date.now().toString(),
+            createdAt: new Date().toISOString(),
+            status: 'active',
+            authorName: currentUser ? currentUser.name : '匿名', // 新增：紀錄發布者
+            pokemonName: formData.get('pokemonName').trim(),
+            tradeType: formData.get('tradeType'),
+            isShiny: formData.get('isShiny') === 'on',
+            contactInfo: formData.get('contactInfo').trim(),
+            details: formData.get('details').trim(),
+            interested: 0
+        };
+    }
+
+    // 3. saveData(record): 儲存單筆並寫入 localStorage
+    function saveData(record) {
+        records.unshift(record); // 加到陣列最前面 (最新在最上)
+        myPosts.push(record.id); // 記錄這是我發布的貼文
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+        localStorage.setItem(MY_POSTS_KEY, JSON.stringify(myPosts));
+    }
+
+    // 4. updateRecord(id, changes): 更新特定貼文
+    function updateRecord(id, changes) {
+        const index = records.findIndex(r => r.id === id);
+        if (index !== -1) {
+            records[index] = { ...records[index], ...changes };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+            applyFiltersAndRender(); // 更新畫面
+        }
+    }
+
+    // 分頁切換功能
+    function switchPage(page) {
+        // 先隱藏所有頁面並移除 tab 活躍狀態
+        document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+
+        // 顯示指定的目標頁面與 tab
+        document.getElementById(`page-${page}`).classList.add('active');
+        
+        const tabBtn = document.getElementById(`tab-${page}`);
+        if (tabBtn) {
+            tabBtn.classList.add('active');
+        }
+        
+        // 若切換至智能匹配頁面，則執行匹配邏輯
+        if (page === 'match') {
+            renderMatches();
+        }
+        
+        // 若切換至訊息匣，則渲染訊息並消除新訊息提示
+        if (page === 'inbox') {
+            renderInbox();
+        }
+    }
+
+    // 5. renderList(recordsToShow): 渲染卡片到畫面上
+    function renderList(recordsToShow) {
+        const listContainer = document.getElementById('tradeList');
+        const emptyMsg = document.getElementById('empty-msg');
+        listContainer.innerHTML = ''; // 清空現有內容
+
+        if (recordsToShow.length === 0) {
+            emptyMsg.style.display = 'block';
+            return;
+        }
+        
+        emptyMsg.style.display = 'none';
+
+        recordsToShow.forEach(record => {
+            const card = document.createElement('div');
+            // 設定樣式類別：基本卡片 + 交易類型顏色 + 狀態
+            card.className = `card type-${record.tradeType} status-${record.status}`;
+            
+            // 格式化時間
+            const dateObj = new Date(record.createdAt);
+            const timeString = dateObj.toLocaleString('zh-TW', { 
+                month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'
+            });
+
+            // 徽章 HTML
+            const typeBadgeHtml = `<span class="type-badge badge-${record.tradeType}">${record.tradeType === 'FT' ? '提供 FT' : '尋找 LF'}</span>`;
+            const shinyBadgeHtml = record.isShiny ? `<span class="shiny-badge">✨ 色違</span>` : '';
+            
+            // 狀態文字
+            const statusText = record.status === 'traded' ? '(已交換)' : '';
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3 class="card-title">
+                        ${record.pokemonName} ${statusText}
+                        ${shinyBadgeHtml}
+                    </h3>
+                    ${typeBadgeHtml}
+                </div>
+                <div class="card-body">
+                    <p><strong>👤 訓練家：</strong> ${record.authorName || '未知'}</p>
+                    <p><strong>📞 聯絡方式：</strong> ${record.contactInfo}</p>
+                    ${record.details ? `<p><strong>📝 備註細節：</strong> ${record.details}</p>` : ''}
+                </div>
+                <div class="card-meta">
+                    🕒 發布於：${timeString} | 🔥 感興趣人數：${record.interested}
+                </div>
+                <div class="card-actions">
+                    <button class="action-btn btn-interest" onclick="handleInterest('${record.id}')">
+                        🔥 有興趣 (+1)
+                    </button>
+                    ${record.authorName !== (currentUser ? currentUser.name : '') && record.authorName !== '匿名' ? 
+                    `<button class="action-btn btn-message" onclick="openMessageModal('${record.authorName}', '${record.pokemonName}')">
+                        ✉️ 發送請求
+                    </button>` : ''}
+                    <button class="action-btn btn-status" onclick="handleToggleStatus('${record.id}', '${record.status}')">
+                        ${record.status === 'active' ? '✅ 標記已交換' : '🔄 恢復進行中'}
+                    </button>
+                </div>
+            `;
+            listContainer.appendChild(card);
+        });
+    }
+
+    // 處理表單提交
+    document.getElementById('tradeForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const newRecord = createRecord(formData);
+        
+        saveData(newRecord);
+        this.reset(); // 清空表單
+        applyFiltersAndRender(); // 重新渲染列表
+        
+        // 發布完成後自動切換回大廳看剛發布的文
+        switchPage('list');
+    });
+
+    // 處理篩選器變更
+    const filterStatus = document.getElementById('filterStatus');
+    const filterType = document.getElementById('filterType');
+    const filterShiny = document.getElementById('filterShiny');
+
+    filterStatus.addEventListener('change', applyFiltersAndRender);
+    filterType.addEventListener('change', applyFiltersAndRender);
+    filterShiny.addEventListener('change', applyFiltersAndRender);
+
+    // 綜合篩選邏輯
+    function applyFiltersAndRender() {
+        const statusVal = filterStatus.value;
+        const typeVal = filterType.value;
+        const shinyVal = filterShiny.checked;
+
+        const filtered = records.filter(record => {
+            const matchStatus = statusVal === 'all' || record.status === statusVal;
+            const matchType = typeVal === 'all' || record.tradeType === typeVal;
+            const matchShiny = !shinyVal || record.isShiny === true;
+            
+            return matchStatus && matchType && matchShiny;
+        });
+
+        renderList(filtered);
+    }
+
+    // 按鈕行為：增加有興趣次數
+    function handleInterest(id) {
+        const target = records.find(r => r.id === id);
+        if (target) {
+            updateRecord(id, { interested: target.interested + 1 });
+        }
+    }
+
+    // 按鈕行為：切換狀態
+    function handleToggleStatus(id, currentStatus) {
+        const newStatus = currentStatus === 'active' ? 'traded' : 'active';
+        updateRecord(id, { status: newStatus });
+        
+        // 如果在匹配頁面操作，重新渲染匹配結果
+        if (document.getElementById('page-match') && document.getElementById('page-match').classList.contains('active')) {
+            renderMatches();
+        }
+    }
+
+    // 自動匹配邏輯
+    function renderMatches() {
+        const matchContainer = document.getElementById('matchList');
+        matchContainer.innerHTML = '';
+
+        // 找出「我發布的」且「進行中」的貼文
+        const myActivePosts = records.filter(r => myPosts.includes(r.id) && r.status === 'active');
+
+        if (myActivePosts.length === 0) {
+            matchContainer.innerHTML = '<div id="empty-msg" style="display:block; border: 2px dashed var(--border-color);">📝 你目前沒有進行中的交易貼文，請先去「發布貼文」發布一筆來尋找匹配吧！</div>';
+            return;
+        }
+
+        let hasMatches = false;
+
+        myActivePosts.forEach(myPost => {
+            // 尋找可以匹配的對象
+            const matches = records.filter(otherPost => {
+                // 原本會排除自己的所有貼文，為了方便你在單一瀏覽器測試，
+                // 現在改為：只要不是「同一篇貼文」且狀態為「進行中」就可以進行配對檢查！
+                if (otherPost.status !== 'active' || otherPost.id === myPost.id) return false; 
+                
+                const myPkmn = myPost.pokemonName.toLowerCase();
+                const otherPkmn = otherPost.pokemonName.toLowerCase();
+
+                // 若我提供 (FT)，尋找需要該寶可夢的人 (LF)
+                if (myPost.tradeType === 'FT' && otherPost.tradeType === 'LF' && (otherPkmn.includes(myPkmn) || myPkmn.includes(otherPkmn))) {
+                    return true;
+                }
+                // 若我尋找 (LF)，尋找提供該寶可夢的人 (FT)
+                if (myPost.tradeType === 'LF' && otherPost.tradeType === 'FT' && (otherPkmn.includes(myPkmn) || myPkmn.includes(otherPkmn))) {
+                    return true;
+                }
+                return false;
+            });
+
+            if (matches.length > 0) {
+                hasMatches = true;
+                const matchGroup = document.createElement('div');
+                matchGroup.style.marginBottom = '30px';
+                matchGroup.innerHTML = `
+                    <h3 style="color: var(--primary); border-bottom: 3px solid rgba(244, 63, 94, 0.3); padding-bottom: 10px; margin-bottom: 15px;">
+                        🎯 針對你的「${myPost.tradeType === 'FT' ? '提供' : '尋找'}：${myPost.pokemonName}」，找到了 ${matches.length} 個潛在交易！
+                    </h3>
+                `;
+                
+                matches.forEach(record => {
+                    const card = document.createElement('div');
+                    card.className = `card type-${record.tradeType} status-${record.status}`;
+                    const dateObj = new Date(record.createdAt);
+                    const timeString = dateObj.toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+                    const typeBadgeHtml = `<span class="type-badge badge-${record.tradeType}">${record.tradeType === 'FT' ? '提供 FT' : '尋找 LF'}</span>`;
+                    const shinyBadgeHtml = record.isShiny ? `<span class="shiny-badge">✨ 色違</span>` : '';
+
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <h3 class="card-title">${record.pokemonName} ${shinyBadgeHtml}</h3>
+                            ${typeBadgeHtml}
+                        </div>
+                        <div class="card-body">
+                            <p><strong>👤 訓練家：</strong> ${record.authorName || '未知'}</p>
+                            <p><strong>📞 聯絡方式：</strong> ${record.contactInfo}</p>
+                            ${record.details ? `<p><strong>📝 備註細節：</strong> ${record.details}</p>` : ''}
+                        </div>
+                        <div class="card-meta">
+                            🕒 發布於：${timeString} | 🔥 感興趣人數：${record.interested}
+                        </div>
+                        <div class="card-actions">
+                            <button class="action-btn btn-interest" onclick="handleInterest('${record.id}')">🔥 有興趣 (+1)</button>
+                            <button class="action-btn btn-message" onclick="openMessageModal('${record.authorName}', '${record.pokemonName}')">✉️ 發送交易請求</button>
+                        </div>
+                    `;
+                    matchGroup.appendChild(card);
+                });
+                matchContainer.appendChild(matchGroup);
+            }
+        });
+
+        if (!hasMatches) {
+            matchContainer.innerHTML = '<div id="empty-msg" style="display:block; border: 2px dashed var(--border-color);">🥺 根據你目前的貼文，還沒有找到匹配的交易對象，晚點再來看看吧！</div>';
+        }
+    }
+
+    // 開啟發送訊息彈窗
+    function openMessageModal(toUser, targetPokemon = null) {
+        if (!currentUser) return alert("請先登入！");
+        if (currentUser.name === toUser) return alert("不能發送訊息給自己喔！");
+
+        currentMessageTarget = toUser;
+        currentMessagePokemon = targetPokemon;
+
+        document.getElementById('modalTitle').innerText = `發送訊息給：${toUser}`;
+
+        const inputEl = document.getElementById('messageInput');
+        if (targetPokemon) {
+            inputEl.value = `你好！我對你發布的【${targetPokemon}】很感興趣，希望能跟你交換！\n我的聯絡方式是：${currentUser.contact}`;
+        } else {
+            // 如果是回覆訊息，沒有指定寶可夢
+            inputEl.value = `\n\n---\n來自 ${currentUser.name} (聯絡方式: ${currentUser.contact})`;
+        }
+
+        document.getElementById('messageModal').style.display = 'flex';
+    }
+
+    // 關閉發送訊息彈窗
+    function closeMessageModal() {
+        document.getElementById('messageModal').style.display = 'none';
+        document.getElementById('messageInput').value = '';
+    }
+
+    // 實際提交發送訊息
+    function submitMessage() {
+        const content = document.getElementById('messageInput').value.trim();
+        if (!content) return alert("請輸入訊息內容！");
+
+        const newMsg = {
+            id: Date.now().toString(),
+            fromUser: currentUser.name,
+            toUser: currentMessageTarget,
+            pokemon: currentMessagePokemon,
+            content: content,
+            createdAt: new Date().toISOString(),
+            isRead: false
+        };
+        
+        messages.unshift(newMsg);
+        localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+        
+        closeMessageModal();
+        alert(`✅ 訊息已發送給 ${currentMessageTarget}！`);
+        updateUnreadBadge();
+    }
+
+    // 渲染訊息匣
+    function renderInbox() {
+        if (!currentUser) return;
+        const myMessages = messages.filter(m => m.toUser === currentUser.name);
+        const container = document.getElementById('inboxList');
+        container.innerHTML = '';
+        
+        if (myMessages.length === 0) {
+            container.innerHTML = '<div id="empty-msg" style="display:block; border: 2px dashed var(--border-color);">📭 目前沒有收到任何交易請求。</div>';
+            return;
+        }
+        
+        myMessages.forEach(msg => {
+            const card = document.createElement('div');
+            // 已讀則變灰色，未讀維持高亮色
+            card.className = `card ${msg.isRead ? 'status-traded' : 'type-FT'}`;
+            const dateObj = new Date(msg.createdAt);
+            const timeString = dateObj.toLocaleString('zh-TW', { month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3 class="card-title">來自訓練家：${msg.fromUser}</h3>
+                    ${!msg.isRead ? '<span class="shiny-badge" style="background:var(--primary); color:white; border-color:var(--primary);">新訊息</span>' : ''}
+                </div>
+                <div class="card-body">
+                    <p style="white-space: pre-wrap; background: var(--input-bg); color: var(--text-dark); padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-top: 10px;">${msg.content}</p>
+                </div>
+                <div class="card-meta">
+                    🕒 接收於：${timeString}
+                </div>
+                <div class="card-actions">
+                    ${!msg.isRead ? `<button class="action-btn btn-interest" onclick="markAsRead('${msg.id}')">👁️ 標記為已讀</button>` : '<span style="color: #64748b; font-weight: 900; padding: 10px 0; margin-right: 10px;">已讀取</span>'}
+                    <button class="action-btn btn-message" onclick="openMessageModal('${msg.fromUser}')">↩️ 回覆訊息</button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // 標記訊息為已讀
+    function markAsRead(msgId) {
+        const msg = messages.find(m => m.id === msgId);
+        if(msg) {
+            msg.isRead = true;
+            localStorage.setItem(MESSAGES_KEY, JSON.stringify(messages));
+            renderInbox(); // 重新渲染畫面
+            updateUnreadBadge(); // 更新紅點數字
+        }
+    }
+
+    // 更新未讀訊息紅點
+    function updateUnreadBadge() {
+        if (!currentUser) return;
+        const unreadCount = messages.filter(m => m.toUser === currentUser.name && !m.isRead).length;
+        const badge = document.getElementById('unreadBadge');
+        if (unreadCount > 0) {
+            badge.style.display = 'inline-block';
+            badge.innerText = unreadCount;
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    // 處理登入表單
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const name = document.getElementById('trainerName').value.trim();
+        const contact = document.getElementById('defaultContact').value.trim();
+        
+        currentUser = { name, contact };
+        localStorage.setItem('pokemon_current_user', JSON.stringify(currentUser));
+        
+        // 登入後顯示導覽列並跳轉到大廳
+        document.getElementById('main-nav').style.display = 'flex';
+        document.getElementById('contactInfo').value = currentUser.contact; // 自動填入聯絡方式
+        updateUnreadBadge(); // 檢查是否有未讀訊息
+        switchPage('list');
+    });
+
+    // 登出功能
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('pokemon_current_user');
+        document.getElementById('main-nav').style.display = 'none';
+        switchPage('login');
+    }
+
+    // 初始化
+    function init() {
+        records = loadData();
+        
+        // 檢查是否已登入
+        if (currentUser) {
+            document.getElementById('main-nav').style.display = 'flex';
+            document.getElementById('contactInfo').value = currentUser.contact;
+            updateUnreadBadge(); // 檢查是否有未讀訊息
+            switchPage('list');
+        } else {
+            document.getElementById('main-nav').style.display = 'none';
+            switchPage('login');
+        }
+        
+        applyFiltersAndRender();
+    }
+
+    // 網頁載入完成後執行
+    window.addEventListener('DOMContentLoaded', init);
+
+</script>
+</body>
+</html>
